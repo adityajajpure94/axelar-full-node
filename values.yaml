@@ -1,0 +1,57 @@
+name: axelar-testnet
+namespace: default
+
+image:
+  repository: axelarnet/axelar-core
+  tag: v0.34.1
+  pullPolicy: IfNotPresent
+
+configs:
+  moniker: axelar-testnet
+  network: testnet
+  snapshot: axelartestnet-lisbon-3-pruned
+  
+  configtoml:
+    rpc:
+      laddr: "tcp://127.0.0.1:26657"
+      grpc_laddr: ""
+    p2p:
+      seed_mode: false
+      pex: false
+      laddr: "tcp://127.0.0.1:26656"
+      externalAddress: ""
+      seeds: "a005b8923888007eb5cf9ed8c8120ed956bc31f7@k8s-testnet-axelarco-c0dd71f944-b4c8da2f814e7b8f.elb.us-east-2.amazonaws.com:26656"
+      persistent_peers: ["a005b8923888007eb5cf9ed8c8120ed956bc31f7@k8s-testnet-axelarco-c0dd71f944-b4c8da2f814e7b8f.elb.us-east-2.amazonaws.com:26656"]
+    instrumentation:
+      prometheus: true
+    mempool: {}
+    ephemeral: false
+  apptoml:
+    api:
+      enable: true
+      address: "tcp://0.0.0.0:1317"
+    grpc:
+      enable: true
+      address: "0.0.0.0:9090"
+    telemetry:
+      enabled: false
+    pruning: "default"
+  env:
+    startrest: true
+    chainid: "axelar-testnet-lisbon-3"
+
+# TODO: take this from external secrets
+secrets:
+  KEYRING_PASSWORD: password
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 1Gi
+  limits:
+    cpu: 1
+    memory: 3Gi
+
+volumes:
+  storageClassName: standard
+  storage: 500G

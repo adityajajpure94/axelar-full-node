@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "app.name" . }}-configfiles
+  namespace: {{ .Values.namespace }}
+data:
+  config.toml: |
+  {{- $configtoml := .Values.configs.configtoml }}
+  {{- $_ := set $configtoml "moniker" .Values.configs.moniker }}
+{{ tpl ($.Files.Get "conf/config.toml.tpl") (dict "Values" $configtoml "Template" $.Template) | indent 4 }}
+
+  app.toml: |
+  {{- $apptoml := .Values.configs.apptoml }}
+{{ tpl ($.Files.Get "conf/app.toml.tpl") (dict "Values" $apptoml "Template" $.Template) | indent 4 }}
+
+  genesis.json: |
+{{ $.Files.Get (printf "conf/resources/%s/genesis.json" .Values.configs.network) | indent 4 }}
+  
+  seeds.toml: |
+{{ $.Files.Get (printf "conf/resources/%s/seeds.toml" .Values.configs.network) | indent 4 }}
+  
+  consume-genesis.sh: |
+{{ $.Files.Get "conf/consume-genesis.sh" | indent 4 }}
+
